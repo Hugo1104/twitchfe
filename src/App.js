@@ -1,12 +1,42 @@
-import React from "react";
-import { Layout } from "antd";
+import React, { useState } from "react";
+import { Layout, message } from "antd";
+import { logout, getFavoriteItem } from "./utils";
+import PageHeader from "./components/PageHeader";
 
 const { Header, Content, Sider } = Layout;
 
 function App() {
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [favoriteItems, setFavoriteItems] = useState([]);
+
+  const signinOnSuccess = () => {
+    setLoggedIn(true);
+    getFavoriteItem().then((data) => {
+      setFavoriteItems(data);
+    });
+  };
+
+  const signoutOnClick = () => {
+    logout()
+      .then(() => {
+        setLoggedIn(false);
+        message.success("Successfully Signed out");
+      })
+      .catch((err) => {
+        message.error(err.message);
+      });
+  };
+
   return (
     <Layout>
-      <Header>{"Header"}</Header>
+      <Header>
+        <PageHeader
+          loggedIn={loggedIn}
+          signoutOnClick={signoutOnClick}
+          signinOnSuccess={signinOnSuccess}
+          favoriteItems={favoriteItems}
+        />
+      </Header>
       <Layout>
         <Sider width={300} className="site-layout-background">
           {"Sider"}
